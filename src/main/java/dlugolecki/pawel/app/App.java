@@ -1,5 +1,4 @@
-package dlugolecki.pawel;
-import dlugolecki.pawel.service.MenuService;
+package dlugolecki.pawel.app;
 
 /**
  * @author Paweł Długołęcki

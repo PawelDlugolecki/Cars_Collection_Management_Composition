@@ -8,12 +8,14 @@ import dlugolecki.pawel.model.enums.CarBodyType;
 import dlugolecki.pawel.model.enums.EngineType;
 import dlugolecki.pawel.model.enums.SortingType;
 import dlugolecki.pawel.model.enums.TyreType;
+import dlugolecki.pawel.validation.CarValidation;
 import lombok.Data;
 import org.eclipse.collections.impl.collector.BigDecimalSummaryStatistics;
 import org.eclipse.collections.impl.collector.Collectors2;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,18 +24,34 @@ import java.util.stream.Stream;
 public class CarService {
     private final List<Car> cars;
 
-    CarService(String filename) {
+    public CarService(String filename) {
         this.cars = getCarsFromJson(filename);
 
     }
 
     private List<Car> getCarsFromJson(String filename) {
+        AtomicInteger atomicInteger = new AtomicInteger(1);
+        CarValidation carValidation = new CarValidation();
+
         return new CarsConverter("src/main/resources/" + filename + ".json")
                 .fromJson()
-                .orElseThrow(() -> new MyException(ExceptionCode.SERVICE, "CAR SERVICE FROM JSON EXCEPTION"));
+                .orElseThrow(() -> new MyException(ExceptionCode.SERVICE, "CAR SERVICE FROM JSON EXCEPTION"))
+                .stream()
+                .filter(car -> {
+
+                    Map<String, String> errors = carValidation.validate(car);
+                    if (carValidation.hasErrors()) {
+                        System.out.println("VALIDATION ERRORS FOR CAR NO, " + atomicInteger.get());
+                        errors.forEach((k, v) -> System.out.println(k + " " + v));
+                    }
+                    atomicInteger.incrementAndGet();
+                    return !carValidation.hasErrors();
+                }). collect(Collectors.toList());
+
+
     }
 
-    List<Car> sort(SortingType type, boolean descending) {
+    public List<Car> sort(SortingType type, boolean descending) {
 
         Stream<Car> carStream = null;
 
@@ -57,7 +75,7 @@ public class CarService {
         return sortedCars;
     }
 
-    List<Car> carsWithSpecifiedBodyTypeAndPriceBetween(CarBodyType type, BigDecimal minPrice, BigDecimal maxPrice) {
+    public List<Car> carsWithSpecifiedBodyTypeAndPriceBetween(CarBodyType type, BigDecimal minPrice, BigDecimal maxPrice) {
         if (minPrice.compareTo(maxPrice) >= 0) {
             throw new MyException(ExceptionCode.INPUT_DATA, "Min price can not be greater than the max price");
         }
@@ -68,7 +86,7 @@ public class CarService {
                 .collect(Collectors.toList());
     }
 
-    List<Car> sortedCarModelForSpecifiedEngineType(EngineType engineType) {
+    public List<Car> sortedCarModelForSpecifiedEngineType(EngineType engineType) {
         return cars
                 .stream()
                 .filter(e -> e.getEngine().getType().equals(engineType))
@@ -76,7 +94,7 @@ public class CarService {
                 .collect(Collectors.toList());
     }
 
-    void statistics() {
+    public void statistics() {
         System.out.println("- - - - PRICE - - - -");
         BigDecimalSummaryStatistics priceStatistics = cars
                 .stream()
@@ -102,7 +120,7 @@ public class CarService {
         System.out.println("AVG = " + powerStatistics.getAverage());
     }
 
-    Map<Car, Integer> carsWithMileage() {
+    public Map<Car, Integer> carsWithMileage() {
         return cars
                 .stream()
                 .sorted(Comparator.comparing(Car::getMileage).reversed())
@@ -113,7 +131,7 @@ public class CarService {
                         LinkedHashMap::new));
     }
 
-    Map<TyreType, List<Car>> sortedCarsForTyreType() {
+    public Map<TyreType, List<Car>> sortedCarsForTyreType() {
         return cars
                 .stream()
                 .collect(Collectors.groupingBy(
@@ -128,7 +146,7 @@ public class CarService {
                         LinkedHashMap::new));
     }
 
-    List<Car> carsWithSpecifiedComponent(List<String> components) {
+    public List<Car> carsWithSpecifiedComponent(List<String> components) {
         return cars
                 .stream()
                 .filter(car -> car.getCarBody().getComponents().containsAll(components))
