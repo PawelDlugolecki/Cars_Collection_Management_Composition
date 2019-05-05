@@ -1,0 +1,71 @@
+[
+  {
+    "model": "AUDI",
+    "price": 500000,
+    "mileage": 12000,
+    "engine": {
+      "type": "DIESEL",
+      "power": 210
+    },
+    "carBody": {
+      "colour": "BLACK",
+      "type": "HATCHBACK",
+      "components": [
+        "ABS",
+        "AIR CONDITIONING",
+        "NITRO",
+        "RADIO"
+      ]
+    },
+    "wheels": {
+      "type": "SUMMER",
+      "model": "DEBICA",
+      "size": 20
+    }
+  },
+  {
+    "model": "BMW",
+    "price": 600000,
+    "mileage": 14000,
+    "engine": {
+      "type": "DIESEL",
+      "power": 240
+    },
+    "carBody": {
+      "colour": "RED",
+      "type": "SEDAN",
+      "components": [
+        "ABS",
+        "RADIO"
+      ]
+    },
+    "wheels": {
+      "type": "WINTER",
+      "model": "STEEL",
+      "size": 22
+    }
+  },
+  {
+    "model": "MERCEDES",
+    "price": 350000,
+    "mileage": 10000,
+    "engine": {
+      "type": "DIESEL",
+      "power": 215
+    },
+    "carBody": {
+      "colour": "SILVER",
+      "type": "SEDAN",
+      "components": [
+        "ABS",
+        "BLUETOOTH",
+        "SPORT_PACKAGE"
+      ]
+    },
+    "wheels": {
+      "type": "SUMMER",
+      "model": "ALLOY",
+      "size": 18
+    }
+  }
+]
